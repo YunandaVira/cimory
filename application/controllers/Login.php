@@ -17,44 +17,45 @@ class Login extends CI_Controller {
     }
 
     // Menangani proses login
-    private function _login()
-    {
-        $email = htmlspecialchars($this->input->post('email', true));
-        $password = $this->input->post('password', true);
-        $user = $this->ModelUser->cekData(['email' => $email])->row_array();
+    public function validate_login() {
+        // Atur aturan validasi form
+        $this->form_validation->set_rules('email', 'Email', 'required|valid_email');
+        $this->form_validation->set_rules('password', 'Password', 'required');
 
-        // jika usernya ada
-        if ($user) {
-            // cek password
-            if (password_verify($password, $user['password'])) {
-                $data = [
-                    'email' => $user['email'],
-                    'role' => $user['role'],
-                    'id_pengunjung' => $user['id'],
-                    'nama' => $user['nama']
-                ];
-                $this->session->set_userdata($data);
-
-                // Tambahkan pesan flash untuk login berhasil
-                $this->session->set_flashdata('pesan', '<div class="alert alert-success alert-message" role="alert">Anda berhasil login!!</div>');
-
-                redirect('home'); // Redirect ke halaman yang diinginkan
-            } else {
-                $this->session->set_flashdata(
-                    'pesan',
-                    '<div class="alert alert-danger alert-message" role="alert">Password salah!!</div>'
-                );
-                redirect('home'); // jika login gagal, kembali ke home
-            }
+        if ($this->form_validation->run() == FALSE) {
+            $this->load->view('login');
         } else {
-            $this->session->set_flashdata(
-                'pesan',
-                '<div class="alert alert-danger alert-message" role="alert">Email tidak terdaftar!!</div>'
-            );
-            redirect('home');
+            $email = $this->input->post('email');
+            $password = trim($this->input->post('password'));
+
+            // Ambil data user berdasarkan email
+            $user = $this->User_model->get_user_by_email($email);
+
+            if ($user) {
+                // Verifikasi password
+                $verify = password_verify($password, $user['password']);
+                if ($verify) {
+                    // Password cocok, set session
+                    $this->session->set_userdata('user_id', $user['id_pengunjung']);
+                    $this->session->set_userdata('username', $user['nm_pengunjung']);
+                    $this->session->set_userdata('role', $user['role']);
+
+                    // Alihkan ke halaman home setelah login berhasil
+                    redirect('home');
+                } else {
+                    // Jika password salah
+                    $this->session->set_flashdata('error', 'Password salah!');
+                    redirect('login');
+                }
+            } else {
+                // Jika email tidak ditemukan
+                $this->session->set_flashdata('error', 'Email tidak ditemukan!');
+                redirect('login');
+            }
         }
     }
-  // Fungsi logout
+
+    // Fungsi logout
     public function logout() {
         $this->session->sess_destroy(); // Hapus session
         $this->session->set_flashdata('error', 'Anda telah berhasil logout!'); // Set flashdata
