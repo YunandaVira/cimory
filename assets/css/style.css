@@ -1,0 +1,66 @@
+/* Tema Alam */
+body {
+    background-color: #f2f5ea; /* Warna background alami yang lembut */
+    font-family: 'Arial', sans-serif;
+    color: #4b4f3b; /* Warna teks hijau kebiruan alami */
+}
+
+h1, h2 {
+    color: #006400; /* Warna hijau gelap untuk judul */
+    font-weight: bold;
+    font-size: 30px;
+}
+
+.table {
+    background-color: #ffffff; /* Latar belakang putih untuk tabel */
+    border-radius: 8px; /* Sudut tabel yang melengkung */
+}
+
+.table th, .table td {
+    padding: 12px;
+    text-align: center;
+    font-size: 16px;
+}
+
+.btn-success {
+    background-color: #2e8b57; /* Warna hijau daun untuk tombol */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    text-transform: uppercase;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+    background-color: #228b22; /* Efek hover untuk tombol */
+    cursor: pointer;
+}
+
+thead {
+    background-color: #6b8e23; /* Warna hijau lumut untuk header tabel */
+    color: white;
+}
+
+.container {
+    padding: 40px 20px;
+    background-color: #eaf7df; /* Background lembut */
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+}
+
+.text-center {
+    text-align: center;
+}
+
+/* Menambahkan border pada tabel */
+.table-bordered {
+    border: 1px solid #ddd;
+}
+
+/* Menambahkan efek bayangan pada kontainer */
+.container {
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}

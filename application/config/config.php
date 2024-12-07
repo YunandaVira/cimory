@@ -23,7 +23,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://localhost/pustaka-booking/';
+$config['base_url'] = 'http://localhost/cimory-dairyland/';
 
 /*
 |--------------------------------------------------------------------------
@@ -223,7 +223,8 @@ $config['allow_get_array'] = TRUE;
 | your log files will fill up very fast.
 |
 */
-$config['log_threshold'] = 0;
+$config['log_threshold'] = 4;  // Pastikan log_threshold 4 untuk log detail
+
 
 /*
 |--------------------------------------------------------------------------

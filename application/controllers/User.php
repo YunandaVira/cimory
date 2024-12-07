@@ -1,67 +1,70 @@
 <?php
-defined('BASEPATH') or exit('No direct script access allowed');
+defined('BASEPATH') OR exit('No direct script access allowed');
 
-class User extends CI_Controller
-{
-    public function __construct()
-    {
+class User extends CI_Controller {
+
+    public function __construct() {
         parent::__construct();
+        // Pastikan fungsi cek_login() sudah didefinisikan di helper atau controller lain
         cek_login();
+        $this->load->model('User_model');  // Pastikan model yang digunakan adalah User_model
     }
 
-    public function index()
-    {
+    public function index() {
         $data['judul'] = 'Profil Saya';
-        $data['user'] = $this->ModelUser->cekData(['email' => $this->session->userdata('email')])->row_array();
+        // Ambil data pengunjung berdasarkan email yang disimpan di session
+        $data['user'] = $this->User_model->cekData(['email' => $this->session->userdata('email')])->row_array();
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('templates/sidebar', $data);
-        $this->load->view('templates/topbar', $data);
-        $this->load->view('user/index', $data);
-        $this->load->view('templates/footer');
+        // Memuat header, sidebar, topbar dan halaman profil pengguna
+        $this->load->view('templates/templates-user/header', $data);  // Header sesuai template user
+        $this->load->view('templates/templates-user/sidebar', $data); // Sidebar sesuai template user
+        $this->load->view('templates/templates-user/topbar', $data);  // Topbar sesuai template user
+        $this->load->view('user/index', $data);  // Tampilan halaman profil pengguna
+        $this->load->view('templates/templates-user/footer');  // Footer sesuai template user
     }
 
-    public function anggota()
-    {
+    public function anggota() {
         $data['judul'] = 'Data Anggota';
-        $data['user'] = $this->ModelUser->cekData(['email' => $this->session->userdata('email')])->row_array();
+        $data['user'] = $this->User_model->cekData(['email' => $this->session->userdata('email')])->row_array();
+        // Ambil data anggota berdasarkan role_id
         $this->db->where('role_id', 1);
-        $data['anggota'] = $this->db->get('user')->result_array();
+        $data['anggota'] = $this->db->get('pengunjung')->result_array(); // Sesuaikan tabelnya dengan pengunjung
 
-        $this->load->view('templates/header', $data);
-        $this->load->view('templates/sidebar', $data);
-        $this->load->view('templates/topbar', $data);
-        $this->load->view('user/anggota', $data);
-        $this->load->view('templates/footer');
+        // Memuat header, sidebar, topbar dan halaman daftar anggota
+        $this->load->view('templates/templates-user/header', $data);
+        $this->load->view('templates/templates-user/sidebar', $data);
+        $this->load->view('templates/templates-user/topbar', $data);
+        $this->load->view('user/anggota', $data);  // Tampilan halaman anggota
+        $this->load->view('templates/templates-user/footer');
     }
 
-    public function ubahProfil()
-    {
+    public function ubahProfil() {
         $data['judul'] = 'Ubah Profil';
-        $data['user'] = $this->ModelUser->cekData(['email' => $this->session->userdata('email')])->row_array();
+        $data['user'] = $this->User_model->cekData(['email' => $this->session->userdata('email')])->row_array();
 
         $this->form_validation->set_rules('nama', 'Nama Lengkap', 'required|trim', [
             'required' => 'Nama tidak Boleh Kosong'
         ]);
 
-
         if ($this->form_validation->run() == false) {
-            $this->load->view('templates/header', $data);
-            $this->load->view('templates/sidebar', $data);
-            $this->load->view('templates/topbar', $data);
+            // Memuat tampilan jika form validasi gagal
+            $this->load->view('templates/templates-user/header', $data);
+            $this->load->view('templates/templates-user/sidebar', $data);
+            $this->load->view('templates/templates-user/topbar', $data);
             $this->load->view('user/ubah-profile', $data);
-            $this->load->view('templates/footer');
+            $this->load->view('templates/templates-user/footer');
         } else {
+            // Jika form validasi berhasil, update data
             $nama = $this->input->post('nama', true);
             $email = $this->input->post('email', true);
 
-            //jika ada gambar yang akan diupload
+            // Jika ada gambar yang diupload
             $upload_image = $_FILES['image']['name'];
 
             if ($upload_image) {
                 $config['upload_path'] = './assets/img/profile/';
                 $config['allowed_types'] = 'gif|jpg|png';
-                $config['max_size']     = '3000';
+                $config['max_size'] = '3000';
                 $config['max_width'] = '1024';
                 $config['max_height'] = '1000';
                 $config['file_name'] = 'pro' . time();
@@ -76,22 +79,22 @@ class User extends CI_Controller
 
                     $gambar_baru = $this->upload->data('file_name');
                     $this->db->set('image', $gambar_baru);
-                } else { }
+                }
             }
 
+            // Update nama pengguna
             $this->db->set('nama', $nama);
             $this->db->where('email', $email);
-            $this->db->update('user');
+            $this->db->update('pengunjung');  // Pastikan tabel sesuai dengan struktur yang ada
 
             $this->session->set_flashdata('pesan', '<div class="alert alert-success alert-message" role="alert">Profil Berhasil diubah </div>');
             redirect('user');
         }
     }
 
-    public function ubahPassword()
-    {
+    public function ubahPassword() {
         $data['judul'] = 'Ubah Password';
-        $data['user'] = $this->ModelUser->cekData(['email' => $this->session->userdata('email')])->row_array();
+        $data['user'] = $this->User_model->cekData(['email' => $this->session->userdata('email')])->row_array();
 
         $this->form_validation->set_rules('password_sekarang', 'Password Saat ini', 'required|trim', [
             'required' => 'Password saat ini harus diisi'
@@ -110,11 +113,11 @@ class User extends CI_Controller
         ]);
 
         if ($this->form_validation->run() == false) {
-            $this->load->view('templates/header', $data);
-            $this->load->view('templates/sidebar', $data);
-            $this->load->view('templates/topbar', $data);
+            $this->load->view('templates/templates-user/header', $data);
+            $this->load->view('templates/templates-user/sidebar', $data);
+            $this->load->view('templates/templates-user/topbar', $data);
             $this->load->view('user/ubah-password', $data);
-            $this->load->view('templates/footer');
+            $this->load->view('templates/templates-user/footer');
         } else {
             $pwd_skrg = $this->input->post('password_sekarang', true);
             $pwd_baru = $this->input->post('password_baru1', true);
@@ -126,12 +129,12 @@ class User extends CI_Controller
                     $this->session->set_flashdata('pesan', '<div class="alert alert-danger alert-message" role="alert">Password Baru tidak boleh sama dengan password saat ini!!! </div>');
                     redirect('user/ubahPassword');
                 } else {
-                    //password ok
+                    // Update password
                     $password_hash = password_hash($pwd_baru, PASSWORD_DEFAULT);
 
                     $this->db->set('password', $password_hash);
                     $this->db->where('email', $this->session->userdata('email'));
-                    $this->db->update('user');
+                    $this->db->update('pengunjung');  // Pastikan tabel sesuai dengan struktur yang ada
 
                     $this->session->set_flashdata('pesan', '<div class="alert alert-success alert-message" role="alert">Password Berhasil diubah</div>');
                     redirect('user/ubahPassword');

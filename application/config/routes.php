@@ -50,5 +50,26 @@ defined('BASEPATH') or exit('No direct script access allowed');
 |		my-controller/my-method	-> my_controller/my_method
 */
 $route['default_controller'] = 'home';
+$route['home/daftar_tiket'] = 'home/daftar_tiket';
 $route['404_override'] = '';
 $route['translate_uri_dashes'] = FALSE;
+$route['login'] = 'login/index';  // Menampilkan form login
+$route['login/validate_login'] = 'login/validate_login';  // Proses login
+$route['logout'] = 'login/logout';  // Proses logout
+$route['register'] = 'register/index';  // Mengarahkan ke controller Register
+$route['register/register_user'] = 'register/register_user'; // Routing untuk aksi register_user
+$route['admin/dashboard'] = 'admin/dashboard'; // Halaman dashboard admin
+$route['member/dashboard'] = 'member/dashboard'; // Halaman dashboard member
+$route['home'] = 'home/index';  // Arahkan ke method home/index
+$route['tiket'] = 'tiket/kategori';
+$route['tiket/masuk'] = 'tiket/masuk';
+$route['tiket/makanh'] = 'tiket/makanh';
+$route['tiket/wahana'] = 'tiket/wahana';
+$route['tentang'] = 'home/tentang';
+$route['map_area'] = 'home/map_area';  // Sesuaikan dengan controller yang sesuai
+
+
+
+
+
+

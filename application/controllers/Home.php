@@ -1,66 +1,45 @@
 <?php
-class Home extends CI_Controller
-{
-    function __construct()
-    {
+defined('BASEPATH') OR exit('No direct script access allowed');
+
+class Home extends CI_Controller {
+
+    public function __construct() {
         parent::__construct();
-        $this->load->model(['ModelBuku', 'ModelUser', 'ModelBooking']);
+        // Memuat model Tiket_model secara global untuk digunakan di semua method
+        $this->load->model('Tiket_model');
     }
 
-    public function index()
-    {
-        $data = [
-            'judul' => "Katalog Buku",
-            'buku' => $this->ModelBuku->getBuku()->result(),
-        ];
-
-        // Jika sudah login dan jika belum login
-        if ($this->session->userdata('email')) {
-            $user = $this->ModelUser->cekData(['email' => $this->session->userdata('email')])->row_array();
-            $data['user'] = $user['nama'];
-
-            // Menambahkan pesan flash untuk login berhasil
-            if ($this->session->flashdata('pesan')) {
-                $data['flash_message'] = $this->session->flashdata('pesan');
-            }
-
-            $this->load->view('templates/templates-user/header', $data);
-            $this->load->view('buku/daftarbuku', $data);
-            $this->load->view('templates/templates-user/modal');
-            $this->load->view('templates/templates-user/footer', $data);
-        } else {
-            $data['user'] = 'Pengunjung';
-            $this->load->view('templates/templates-user/header', $data);
-            $this->load->view('buku/daftarbuku', $data);
-            $this->load->view('templates/templates-user/modal');
-            $this->load->view('templates/templates-user/footer', $data);
-        }
+    public function index() {
+        // Menampilkan halaman Home
+        $this->load->view('templates/templates-user/header');  // Memuat header
+        $this->load->view('home');  // Memuat tampilan home
+        $this->load->view('templates/templates-user/footer');  // Memuat footer
     }
 
-    public function detailBuku()
-    {
-        $id = $this->uri->segment(3);
-        $buku = $this->ModelBuku->joinKategoriBuku(['buku.id' => $id])->result();
-
-        $data['user'] = "Pengunjung";
-        $data['title'] = "Detail Buku";
-
-        foreach ($buku as $fields) {
-            $data['judul'] = $fields->judul_buku;
-            $data['pengarang'] = $fields->pengarang;
-            $data['penerbit'] = $fields->penerbit;
-            $data['kategori'] = $fields->kategori;
-            $data['tahun'] = $fields->tahun_terbit;
-            $data['isbn'] = $fields->isbn;
-            $data['gambar'] = $fields->image;
-            $data['dipinjam'] = $fields->dipinjam;
-            $data['dibooking'] = $fields->dibooking;
-            $data['stok'] = $fields->stok;
-            $data['id'] = $id;
-        }
-        $this->load->view('templates/templates-user/header', $data);
-        $this->load->view('buku/detail-buku', $data);
-        $this->load->view('templates/templates-user/modal');
+    // Menampilkan daftar tiket
+    public function daftar_tiket() {
+        // Mengambil data tiket untuk berbagai kategori
+        $data['tiket_masuk'] = $this->Tiket_model->getTiketMasuk();
+        $data['tiket_makanh'] = $this->Tiket_model->getTiketMakanHewan();
+        $data['tiket_wahana'] = $this->Tiket_model->getTiketWahana();
+        
+        // Menampilkan halaman daftar tiket
+        $this->load->view('templates/templates-user/header');
+        $this->load->view('tiket/index', $data);  // Menampilkan daftar tiket
         $this->load->view('templates/templates-user/footer');
+    }
+
+    public function tentang() {
+        // Load header, view tentang, dan footer
+        $this->load->view('templates/templates-user/header');
+        $this->load->view('tentang'); // File view tentang
+        $this->load->view('templates/templates-user/footer');
+    }
+
+    public function map_area() {
+        // Menampilkan halaman Map Area
+        $this->load->view('templates/templates-user/header');  // Memuat header
+        $this->load->view('map_area');  // Memuat tampilan map.php
+        $this->load->view('templates/templates-user/footer');  // Memuat footer
     }
 }
